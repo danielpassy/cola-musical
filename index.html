@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <title>TranspoCola </title>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Transposições de colas</h1>
+    <p>Escreva sua cola e transponha</p>
+
+    <form onsubmit="event.preventDefault(); transpose();">
+      <label class="mx-2 text-left" for="inputText">Notas:</label>
+      <textarea class="mx-2" id="inputText" name="inputText" style="width: 100%; min-height: 8vh;"></textarea>
+      <br>
+      <span id="inputError" style="color: red;"></span> <!-- Error message placeholder -->
+      <br>
+      <div style="margin-bottom: 10vh; margin-top: 10vh;">
+        <div style="display: flex; justify-content: space-between">
+        </div>
+
+        <div class=class="my-2">
+          <label for="tomOriginal">Tom Original</label>
+          <select class="ma-2" id="tomOriginal" name="tomOriginal">
+            <option value="DO">Do - Flauta, Trombone, </option>
+            <option value="SIb">SIb - trompete, sax tenor, Eufonio</option>
+            <option value="MIb">MIb - Sax alto, barítono</option>
+          </select>
+        </div>
+
+
+        <div class="my-2">
+          <label for="tomFinal">Tom Final</label>
+          <select class="ma-2" id="tomFinal" name="tomFinal">
+            <option value="DO">Do - Flauta, Trombone</option>
+            <option value="Sib">SIb - trompete, sax tenor, Eufonio</option>
+            <option value="MIb">MIb - Sax alto, barítono</option>
+          </select>
+        </div>
+      </div>
+
+      <br>
+
+      <button type="button" onclick="transpose()">Transpor</button>
+    </form>
+    <br>
+    <label class="mx-2 text-left" for="result">Resultado:</label>
+    <div>
+      <textarea class="mx-2 " style="width: 100%; min-height: 8vh;" type="text" id="result" name="result" readonly>
+    </textarea>
+    </div>
+  </div>
+
+  <script>
+    const NOTAS = [
+      "DO", "DO#", "RE", "RE#", "MI", "FA", "FA#", "SOL", "SOL#", "LA", "LA#", "SI"
+    ];
+
+
+    const TONE_MAPPING = {
+      "DO": {
+        "DO": 0,
+        "SIb": -2,
+        "MIb": -3
+      },
+      "SIb": {
+        "DO": 2,
+        "SIb": 0,
+        "MIb": -1
+      },
+      "MIb": {
+        "DO": 3,
+        "SIb": 1,
+        "MIb": 0
+      }
+    };
+
+
+    function setError(msg) {
+      document.getElementById("inputError").textContent = msg;
+      console.log('executou')
+    }
+
+    function transpose() {
+      const input = document.getElementById("inputText");
+      const inputValue = input.value;
+
+
+      const notes = inputValue.split(" ");
+
+      const inputTone = document.getElementById("tomOriginal").value.toUpperCase();
+      const outputTone = document.getElementById("tomFinal").value.toUpperCase();
+      const amountToTranspose = TONE_MAPPING[inputTone][outputTone];
+
+      const transposedNotes = notes.map(note => {
+        const currentIndex = NOTAS.indexOf(note);
+        const transposedIndex = (currentIndex + amountToTranspose) % NOTAS.length;
+        const adjustedIndex = transposedIndex >= 0 ? transposedIndex : transposedIndex + NOTAS.length;
+
+        if (currentIndex < 0) {
+          setError(note + " não é uma nota válida");
+          return;
+        }
+        return NOTAS[adjustedIndex];
+      });
+
+      document.getElementById("result").value = transposedNotes.join(" ");
+    }
+
+  </script>
+  </div>
+</body>
+
+</html>
